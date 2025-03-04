@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id "io.qameta.allure" version "2.11.2"
+}
+allure {
+    report {
+        version.set("2.27.0")
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set("2.27.0")
+            }
+        }
+    }
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+    maxParallelForks = Runtime.runtime.availableProcessors() // Используй количество доступных процессоров
+    forkEvery = 100 // Количество тестов на каждый fork
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+        showStandardStreams = true
+        exceptionFormat "full"
+    }
+}

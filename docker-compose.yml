@@ -1,0 +1,23 @@
+services:
+  test-container-1:
+    build: .
+    container_name: test-container-1
+    volumes:
+      - .:/app
+    command: ["./gradlew", "test"]
+
+  test-container-2:
+    build: .
+    container_name: test-container-2
+    volumes:
+      - .:/app
+    command: ["./gradlew", "test"]
+
+  test-container-3:
+    build: .
+    container_name: test-container-3
+    volumes:
+      - .:/app
+    command: ["./gradlew", "test"]
+
+
