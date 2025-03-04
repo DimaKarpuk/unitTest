@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('H/5 * * * *')
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -26,8 +22,14 @@ pipeline {
 
         stage('Allure Report') {
             steps {
-                bat 'gradlew allureReport'
-                allure includeProperties: false, jdk: '', results: [[path: 'build/allure-results']]
+                script {
+                    if (fileExists('build/allure-results')) {
+                        bat 'gradlew allureReport'
+                        allure includeProperties: false, jdk: '', results: [[path: 'build/allure-results']]
+                    } else {
+                        echo 'No test results found, skipping Allure report generation.'
+                    }
+                }
             }
         }
 
