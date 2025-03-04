@@ -24,6 +24,7 @@ public class UnitTests {
         Assertions.assertAll(
                 () -> Assertions.assertTrue(isPalindrome("заказ"),"слово заказ не является палиндромом"),
                 () -> Assertions.assertFalse(isPalindrome("крышаa"),"не прошел 1"),
+                () -> Assertions.assertFalse(isPalindrome("крышаa"),"не прошел 1"),
                 () -> Assertions.assertFalse(isPalindrome("")),
                 () -> Assertions.assertFalse(isPalindrome(null)),
                 () -> Assertions.assertTrue(isPalindrome("12321"), "не прошел 2"),
