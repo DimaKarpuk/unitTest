@@ -14,12 +14,9 @@ pipeline {
             }
         }
 
-        stage('Test in Docker') {
+        stage('Test') {
             steps {
-                script {
-                    sh 'docker-compose up --build -d'
-                    sleep time: 60, unit: 'SECONDS'
-                }
+                bat 'gradlew test'
             }
         }
 
@@ -42,12 +39,6 @@ pipeline {
             archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
-            script {
-                sh 'docker-compose down'
-            }
         }
     }
 }
-
-
-
