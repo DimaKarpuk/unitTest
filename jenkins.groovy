@@ -1,6 +1,18 @@
 pipeline {
     agent any
 
+
+    triggers {
+        genericTrigger(
+                genericVariables: [
+                        [key: 'pull_request', value: '$.action'],
+                        [key: 'branch_name', value: '$.pull_request.head.ref']
+                ],
+                causeString: 'Triggered on Pull Request',
+                token: 'YOUR_SECRET_TOKEN'
+        )
+    }
+
     stages {
         stage('Checkout') {
             steps {
