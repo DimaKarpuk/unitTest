@@ -18,6 +18,7 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose up --build -d'
+                    sleep time: 60, unit: 'SECONDS'
                 }
             }
         }
