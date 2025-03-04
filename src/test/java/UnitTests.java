@@ -34,6 +34,7 @@ public class UnitTests {
     public void isLeapYearTest() {
         Assertions.assertAll(
                 () -> Assertions.assertTrue(isLeapYear(2012)),
+                () -> Assertions.assertTrue(isLeapYear(2016)),
                 () -> Assertions.assertFalse(isLeapYear(2017)),
                 () -> Assertions.assertFalse(isLeapYear(111)),
                 () -> Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> isLeapYear(-100)));
