@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/DimaKarpuk/unitTest.git'
+                git credentialsId: 'github-token', url: 'https://github.com/DimaKarpuk/unitTest.git'
             }
         }
 
@@ -42,3 +42,4 @@ pipeline {
         }
     }
 }
+
