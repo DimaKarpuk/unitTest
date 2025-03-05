@@ -7,7 +7,7 @@ import org.junit.jupiter.api.condition.OS;
 
 @EnabledOnJre(JRE.JAVA_22)
 @EnabledOnOs(OS.WINDOWS)
-public class UnitTests {
+public class UnitTests extends SimpleTelegramNotifier {
     private final int[] arr = {1, 2, 3, 4, 5};
     private final int[] arr1 = new int[0];
 

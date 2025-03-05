@@ -56,14 +56,6 @@ pipeline {
             archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
-
-
-            echo 'Running Allure Notifications...'
-            script {
-                // Выполнение команды для Allure Notifications
-                bat 'java "-DconfigFile=notifications/config.json" -jar C:\\Users\\dzmitry.karpuk\\IdeaProjects\\unitTests\\allure-notifications-4.8.0.jar'
-
-            }
         }
     }
 }
