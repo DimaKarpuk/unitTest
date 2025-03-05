@@ -70,7 +70,7 @@ pipeline {
 
                 def command = "curl -s -X POST https://api.telegram.org/bot${telegramToken}/sendMessage " +
                         "-d chat_id=${chatId} " +
-                        "-d parse_mode=Markdown " +
+                        "-d parse_mode=MarkdownV2 " +
                         "-d text='${message}'"
 
                 bat command
