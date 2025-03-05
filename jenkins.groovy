@@ -21,6 +21,15 @@ pipeline {
             }
         }
 
+        stage('Allure Notifications') { // Новый этап после сборки
+            steps {
+                script {
+                    echo 'Running Allure notifications...'
+                    bat 'java "-DconfigFile=notifications/config.json" -jar ../allure-notifications-4.6.1.jar'
+                }
+            }
+        }
+
         stage('Test') {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
@@ -56,47 +65,8 @@ pipeline {
             archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
-
-            echo 'Sending notification to Telegram...'
-            script {
-                // Определяем статус pipeline
-                def status = currentBuild.result ?: 'SUCCESS'
-                def comment = ""
-                if (status == 'SUCCESS') {
-                    comment = "Pipeline completed successfully. All tests passed. 🎉"
-                } else if (status == 'UNSTABLE') {
-                    comment = "Pipeline is unstable. Some tests failed. ⚠️"
-                } else {
-                    comment = "Pipeline failed. Please check the logs. ❌"
-                }
-
-                // Генерация JSON-конфигурации
-                def config = """
-                {
-                    "base": {
-                        "logo": "",
-                        "project": "${env.JOB_NAME}",
-                        "environment": "Test Environment",
-                        "comment": "${comment}",
-                        "reportLink": "${env.BUILD_URL}",
-                        "language": "en",
-                        "allureFolder": "allure-report",
-                        "enableChart": true
-                    },
-                    "telegram": {
-                        "token": "7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc",
-                        "chat": "-1002178373601",
-                        "replyTo": ""
-                    }
-                }
-                """
-                writeFile file: 'config.json', text: config
-
-                // Отправка запроса в Telegram
-                bat 'curl -X POST -H "Content-Type: application/json" -d @config.json https://api.telegram.org/bot7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc/sendMessage'
-
-            }
         }
     }
 }
+
 
