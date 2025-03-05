@@ -64,8 +64,8 @@ pipeline {
                 def config = new groovy.json.JsonSlurper().parseText(configFile)
 
                 // Данные из конфига
-                def telegramToken = config.telegram.token
-                def chatId = config.telegram.chat
+                def telegramToken = '7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc'
+                def chatId = '-1002178373601'
                 def project = config.base.project
                 def environment = config.base.environment
                 def comment = config.base.comment
