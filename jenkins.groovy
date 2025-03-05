@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('* * * * *') // Проверяет изменения каждую минуту
+        pollSCM('* * * * *')
     }
 
     stages {
@@ -17,15 +17,6 @@ pipeline {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                     bat 'gradlew clean build'
-                }
-            }
-        }
-
-        stage('Allure Notifications') { // Новый этап после сборки
-            steps {
-                script {
-                    echo 'Running Allure notifications...'
-                    bat 'java "-DconfigFile=notifications/config.json" -jar ../allure-notifications-4.6.1.jar'
                 }
             }
         }
@@ -65,6 +56,25 @@ pipeline {
             archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
+
+            // 🔹 Отправка уведомления в Telegram
+            script {
+                def telegramToken = '7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc'
+                def chatId = '-1002178373601'
+                def allureReportUrl = "${env.BUILD_URL}allure"
+                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                def message = "🚀 *Jenkins Build #${env.BUILD_NUMBER}*\n" +
+                        "📌 *Status:* ${buildStatus}\n" +
+                        "🔗 *Allure Report:* [Open Report](${allureReportUrl})\n" +
+                        "📅 *Date:* ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
+
+                def command = "curl -s -X POST https://api.telegram.org/bot${telegramToken}/sendMessage " +
+                        "-d chat_id=${chatId} " +
+                        "-d parse_mode=Markdown " +
+                        "-d text='${message}'"
+
+                bat command
+            }
         }
     }
 }
