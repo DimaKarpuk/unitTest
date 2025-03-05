@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('H/5 * * * *') // Проверка изменений каждые 5 минут
+        pollSCM('* * * * *')
     }
 
     stages {
@@ -15,15 +15,14 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                bat 'gradlew clean build'
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                    bat 'gradlew clean build'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                // Обработка ошибок для продолжения выполнения, даже если тесты упали
                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                     bat 'gradlew test'
                 }
@@ -32,13 +31,12 @@ pipeline {
 
         stage('Allure Report') {
             steps {
-                echo 'Generating Allure report...'
                 script {
                     if (fileExists('build/allure-results')) {
-                        bat 'gradlew allureReport' // Генерация отчета Allure
+                        bat 'gradlew allureReport'
                         allure includeProperties: false, jdk: '', results: [[path: 'build/allure-results']]
                     } else {
-                        echo 'No test results found, skipping Allure report generation.'
+                        echo 'No test results found. Skipping Allure report generation.'
                     }
                 }
             }
@@ -59,14 +57,11 @@ pipeline {
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
         }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
         unstable {
-            echo 'Pipeline is unstable due to failed tests.'
+            echo 'Pipeline is unstable due to earlier failures or test issues.'
         }
         failure {
-            echo 'Pipeline failed. Please check the logs for more details.'
+            echo 'Pipeline failed completely. Please check the logs for details.'
         }
     }
 }
