@@ -56,28 +56,6 @@ pipeline {
             archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
-
-            script {
-                // Чтение JSON файла
-                def configFilePath = 'notifications/config.json'
-                def jsonContent = readFile(configFilePath) // Читаем файл как строку
-                def configData = readJSON text: jsonContent // Преобразуем в JSON объект
-
-                // Конвертируем JSON объект в обычный HashMap
-                def serializableConfig = configData.collectEntries { key, value -> [key, value] }
-
-                // Использование данных
-                def telegramToken = serializableConfig.telegram.token
-                def chatId = serializableConfig.telegram.chat
-                def message = serializableConfig.base.comment
-
-                // Отправка сообщения
-                def command = "curl -s -X POST https://api.telegram.org/bot${telegramToken}/sendMessage " +
-                        "-d chat_id=${chatId} " +
-                        "-d text=\"${message}\""
-                bat command
-            }
-
         }
     }
 }
