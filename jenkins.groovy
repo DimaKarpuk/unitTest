@@ -59,18 +59,7 @@ pipeline {
 
             echo 'Sending notification to Telegram...'
             script {
-                // Определяем статус выполнения pipeline
-                def status = currentBuild.result ?: 'SUCCESS'
-                def comment = ''
-                if (status == 'SUCCESS') {
-                    comment = "Pipeline completed successfully. All tests passed. 🎉"
-                } else if (status == 'UNSTABLE') {
-                    comment = "Pipeline completed with unstable status. Some tests failed. ⚠️"
-                } else {
-                    comment = "Pipeline failed. Please check the logs for more details. ❌"
-                }
 
-                // Генерация JSON для отправки в Telegram
                 def config = """
                 {
                     "base": {
@@ -90,8 +79,6 @@ pipeline {
                     }
                 }
                 """
-                writeFile file: 'config.json', text: config
-                bat 'curl -X POST -H "Content-Type: application/json" -d @config.json https://your-telegram-notification-endpoint'
             }
         }
     }
