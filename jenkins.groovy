@@ -57,11 +57,5 @@ pipeline {
             archiveArtifacts artifacts: '**/build/test-results/test/*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
         }
-        unstable {
-            echo 'Pipeline is unstable due to earlier failures or test issues.'
-        }
-        failure {
-            echo 'Pipeline failed completely. Please check the logs for details.'
-        }
     }
 }
