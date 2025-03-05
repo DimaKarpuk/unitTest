@@ -93,7 +93,8 @@ pipeline {
                 writeFile file: 'config.json', text: config
 
                 // Отправка запроса в Telegram
-                bat 'curl -X POST -H "Content-Type: application/json" -d @config.json https://7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc'
+                bat 'curl -X POST -H "Content-Type: application/json" -d @config.json https://api.telegram.org/bot7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc/sendMessage'
+
             }
         }
     }
