@@ -58,34 +58,23 @@ pipeline {
             archiveArtifacts artifacts: '**/build/reports/allure-report/**', fingerprint: true
 
             script {
-                // Читаем конфиг из JSON
-                def configFile = readFile('notifications/config.json')
-                def config = new groovy.json.JsonSlurper().parseText(configFile)
+                // Чтение JSON файла
+                def configFilePath = 'notifications/config.json'
+                def jsonContent = readFile(configFilePath) // Читаем файл как строку
+                def configData = readJSON text: jsonContent // Преобразуем в JSON объект
 
-                // Данные из конфига
-                def telegramToken = config.telegram.token
-                def chatId = config.telegram.chat
-                def project = config.base.project
-                def environment = config.base.environment
-                def comment = config.base.comment
-                def allureReportUrl = "${env.BUILD_URL}allure"
-                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                // Конвертируем JSON объект в обычный HashMap
+                def serializableConfig = configData.collectEntries { key, value -> [key, value] }
 
-                // Формируем сообщение
-                def message = "🚀 *Jenkins Build #${env.BUILD_NUMBER}*\n" +
-                        "📌 *Project:* ${project}\n" +
-                        "🌍 *Environment:* ${environment}\n" +
-                        "💬 *Comment:* ${comment}\n" +
-                        "📌 *Status:* ${buildStatus}\n" +
-                        "🔗 *Allure Report:* [Open Report](${allureReportUrl})\n" +
-                        "📅 *Date:* ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
+                // Использование данных
+                def telegramToken = serializableConfig.telegram.token
+                def chatId = serializableConfig.telegram.chat
+                def message = serializableConfig.base.comment
 
-                // Команда для отправки в Telegram
+                // Отправка сообщения
                 def command = "curl -s -X POST https://api.telegram.org/bot${telegramToken}/sendMessage " +
                         "-d chat_id=${chatId} " +
-                        "-d parse_mode=MarkdownV2 " +
-                        "-d text='${message}'"
-
+                        "-d text=\"${message}\""
                 bat command
             }
 
