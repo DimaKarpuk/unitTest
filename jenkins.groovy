@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('* * * * *')
+        pollSCM('* * * * *') // Проверка изменений каждую минуту
     }
 
     stages {
@@ -59,20 +59,25 @@ pipeline {
 
             // 🔹 Отправка уведомления в Telegram
             script {
+                // Параметры для Telegram
                 def telegramToken = '7245091133:AAEWBoHTgfCn6vfUM6oaY41IMpdTdT5cmtc'
                 def chatId = '-1002178373601'
                 def allureReportUrl = "${env.BUILD_URL}allure"
                 def buildStatus = currentBuild.result ?: 'SUCCESS'
+
+                // Формирование сообщения без экранирования
                 def message = "🚀 *Jenkins Build #${env.BUILD_NUMBER}*\n" +
                         "📌 *Status:* ${buildStatus}\n" +
                         "🔗 *Allure Report:* [Open Report](${allureReportUrl})\n" +
                         "📅 *Date:* ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
 
+                // Команда curl для отправки сообщения
                 def command = "curl -s -X POST https://api.telegram.org/bot${telegramToken}/sendMessage " +
                         "-d chat_id=${chatId} " +
                         "-d parse_mode=MarkdownV2 " +
-                        "-d text='${message}'"
+                        "-d text=\"${message}\""
 
+                // Выполнение команды
                 bat command
             }
         }
